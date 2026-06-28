@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partners App - Encuentra tu Partner Deportivo en Chile</title>
+    <meta name="description" content="La comunidad para deportistas más grande de Chile. Conecta con jugadores de tu nivel, encuentra partidos y mejora tu juego. Disponible para iOS y Android.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #1DA1F2;
+            --dark-bg: #121212;
+            --light-text: #EAEAEA;
+            --medium-text: #888;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--light-text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        header {
+            padding: 20px 0;
+            border-bottom: 1px solid #222;
+            /* --- Sticky Header Styles --- */
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: var(--dark-bg);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            color: #FFF;
+            text-decoration: none;
+        }
+        .logo span {
+            color: var(--primary-color);
+        }
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        nav a {
+            color: var(--light-text);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: color 0.2s ease;
+        }
+        nav a:hover {
+            color: var(--primary-color);
+        }
+        .header-button {
+            background-color: var(--primary-color);
+            color: #FFF;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-weight: 700;
+        }
+
+        /* --- Mobile Navigation --- */
+        .mobile-nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            z-index: 1001;
+        }
+        .hamburger-icon {
+            width: 24px;
+            height: 2px;
+            background-color: white;
+            position: relative;
+            transition: background-color 0.3s ease;
+        }
+        .hamburger-icon::before,
+        .hamburger-icon::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 2px;
+            background-color: white;
+            left: 0;
+            transition: transform 0.3s ease;
+        }
+        .hamburger-icon::before { top: -7px; }
+        .hamburger-icon::after { top: 7px; }
+
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(18, 18, 18, 0.98);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            z-index: 999; /* Below header */
+        }
+        .mobile-nav a {
+            color: var(--light-text);
+            text-decoration: none;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        body.mobile-nav-open .mobile-nav { display: flex; }
+        body.mobile-nav-open .hamburger-icon { background-color: transparent; }
+        body.mobile-nav-open .hamburger-icon::before { transform: rotate(45deg) translate(5px, 5px); }
+        body.mobile-nav-open .hamburger-icon::after { transform: rotate(-45deg) translate(5px, -5px); }
+
+        @media (max-width: 900px) {
+            header nav { display: none; }
+            .mobile-nav-toggle { display: block; }
+        }
+        .hero {
+            position: relative; /* Necesario para posicionar los elementos hijos */
+            text-align: center;
+            padding: 100px 0;
+            overflow: hidden; /* Oculta partes de las imágenes que se salgan */
+            color: #FFF; /* Asegura que el texto sea blanco */
+        }
+        .hero-background-carousel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        .hero-background-carousel .bg-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center center;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out; /* Transición de fundido suave */
+        }
+        .hero-background-carousel .bg-image.active {
+            opacity: 1;
+        }
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(18, 18, 18, 0.8), rgba(18, 18, 18, 0.95));
+            z-index: 2;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 3;
+        }
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 900;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+        .hero p {
+            font-size: 18px;
+            color: var(--medium-text);
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+        .download-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .download-buttons a img {
+            height: 50px;
+            transition: transform 0.2s ease;
+        }
+        .download-buttons a:hover img {
+            transform: scale(1.05);
+        }
+        .features {
+            padding: 80px 0;
+            text-align: center;
+        }
+        .features h2 {
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 50px;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        .feature-item {
+            background-color: #1A1A1A;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #222;
+        }
+        .feature-item h3 {
+            font-size: 22px;
+            margin-top: 0;
+            color: var(--secondary-color);
+        }
+        .feature-item p {
+            color: var(--medium-text);
+        }
+        .cta-professionals {
+            background-color: var(--secondary-color);
+            padding: 80px 0;
+            text-align: center;
+            color: #FFF;
+        }
+        .cta-professionals h2 {
+            font-size: 36px;
+            font-weight: 900;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .cta-professionals p {
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+        .cta-button {
+            background-color: #FFF;
+            color: var(--secondary-color);
+            padding: 15px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 18px;
+            transition: all 0.2s ease;
+        }
+        .cta-button:hover {
+            background-color: #EAEAEA;
+            transform: translateY(-2px);
+        }
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            border-top: 1px solid #222;
+            color: var(--medium-text);
+        }
+        footer a {
+            color: var(--light-text);
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">Partners<span>App</span></a>
+            <nav>
+                <a href="index.html">Inicio</a>
+                <a href="profesionales.html">Para Profesionales</a>
+                <a href="planes.html">Planes</a>
+                <a href="profesionales.html#faq">Preguntas Frecuentes</a>
+                <!-- Este botón dirige a la versión web de la app para iniciar sesión -->
+                <a href="https://app.bepartnerapp.cl" target="_blank" class="header-button">Ingresar</a>
+            </nav>
+            <button class="mobile-nav-toggle" aria-controls="mobile-nav" aria-expanded="false">
+                <div class="hamburger-icon"></div>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" id="mobile-nav">
+        <a href="index.html">Inicio</a>
+        <a href="profesionales.html">Para Profesionales</a>
+        <a href="planes.html">Planes</a>
+        <a href="profesionales.html#faq">Preguntas Frecuentes</a>
+        <a href="https://app.bepartnerapp.cl" target="_blank" class="header-button">Ingresar</a>
+    </div>
+
+    <section class="hero">
+        <div class="hero-background-carousel">
+            <!-- Las imágenes del carrusel se inyectarán aquí con JavaScript -->
+        </div>
+        <div class="hero-overlay"></div>
+        <div class="container hero-content">
+            <h1>La comunidad para deportistas mas grande de Chile.</h1>
+            <p>Conecta, compite y mejora tu juego.</p>
+            <div class="download-buttons">
+                <!-- Los enlaces '#' se deben reemplazar con los enlaces reales de las tiendas cuando los tengas -->
+                <a href="#" target="_blank"><img src="/download-on-the-app-store.svg" alt="Download on the App Store"></a>
+                <a href="#" target="_blank"><img src="/es_badge_web_generic.png" alt="Get it on Google Play"></a>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container">
+            <h2>Una App Hecha por y para Atletas</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <h3>📡 Radar de Partners</h3>
+                    <p>Activa el radar y descubre jugadores cerca de ti con tu mismo nivel y disponibilidad. ¡Nunca más te quedes sin jugar!</p>
+                </div>
+                <div class="feature-item">
+                    <h3>🏟️ Partidos Públicos</h3>
+                    <p>¿Te falta uno para completar el equipo? Publica o únete a partidos abiertos en tu zona y conoce a nuevos jugadores.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>🏆 Perfil Deportivo Único</h3>
+                    <p>Construye tu reputación con un perfil que muestra tus deportes, nivel, medallas de comportamiento y reseñas de otros jugadores.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-professionals">
+        <div class="container">
+            <h2>¿Ofreces servicios como entrenador, quiropráctico o masajista?</h2>
+            <p>Publica en nuestra app y únete a la red de deportistas más grande de Chile.</p>
+            <a href="profesionales.html" class="cta-button">Publicar mis servicios</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>
+                <a href="privacy.html">Política de Privacidad</a> |
+                <a href="https://www.instagram.com/bepartnerapp" target="_blank">Instagram</a> |
+                <a href="mailto:bepartnerglobal@gmail.com">Contacto</a>
+            </p>
+            <p>&copy; 2026 Partners App. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
+            const mobileNav = document.getElementById('mobile-nav');
+            const body = document.body;
+
+            if (mobileNavToggle && mobileNav) {
+                mobileNavToggle.addEventListener('click', function() {
+                    const isExpanded = mobileNavToggle.getAttribute('aria-expanded') === 'true';
+                    mobileNavToggle.setAttribute('aria-expanded', !isExpanded);
+                    body.classList.toggle('mobile-nav-open');
+                });
+
+                mobileNav.addEventListener('click', function(event) {
+                    if (event.target === mobileNav) {
+                        mobileNavToggle.setAttribute('aria-expanded', 'false');
+                        body.classList.remove('mobile-nav-open');
+                    }
+                });
+            }
+
+            // --- Script del Carrusel de Fondo ---
+            const fondosPorDeporte = {
+              'Tenis': ['https://www.sportline.com.sv/media/wysiwyg/TENIS_2x-100.jpg'],
+              'Pádel': ['https://cdag.com.gt/wp-content/uploads/2025/02/Padel-1024x682.jpeg'],
+              'Fútbol': ['https://www.sportline.com.gt/media/wysiwyg/FUTBOL_2x-100.jpg'],
+              'Ping Pong': ['https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStREWnJfTiPKpa-62mL3tIus3MR7xin9VPlg&s'],
+              'Squash': ['https://media.istockphoto.com/id/1232520353/photo/dont-take-your-eyes-off-the-ball-for-one-second.jpg?s=612x612&w=0&k=20&c=z_L0RHlRzU6X21hOARWRV5m9DLm1kB8M84sL9zvNgSY='],
+              'Bádminton': ['https://wallpaper.forfun.com/fetch/08/08452f02bfeb9e2b9e026b6e0fc71822.jpeg'],
+              'Voley': ['https://wallpapers.com/images/hd/intense-game-volleyball-4k-0c5y2vg6bn9zsh17.jpg'],
+              'Básquetbol': ['https://images.unsplash.com/photo-1515523110800-9415d13b84a8?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Zm9uZG8lMjBkZSUyMHBhbnRhbGxhJTIwZGUlMjBiYWxvbmNlc3RvfGVufDB8fDB8fHww'],
+              'Boxeo': ['https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Ym94aW5nfGVufDB8fDB8fHww'],
+              'Gimnasio': ['https://images.unsplash.com/photo-1674834727206-4bc272bfd8da?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGVzdCVDMyVBOXRpY2ElMjBkZSUyMGdpbW5hc2lvfGVufDB8fDB8fHww'],
+              'Kickboxing': ['https://wallpapercat.com/w/full/b/7/b/675861-3840x2160-desktop-4k-kickboxing-background-image.jpg'],
+              'Escalada': ['https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSx9xegV3V1CBBsU1oDbu-mpAxypk7K7VrXhw&s'],
+              'Trekking': ['https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwyalTMvOLA9dSatDkmQ32hT34v_lMeKfvEQ&s'],
+              'MTB / Enduro': ['https://ciclidrigani.it/cdn/shop/collections/cicli-grigani-bici-MTB-downhill-head.jpg?v=1709220955&width=1400'],
+              'Ciclismo': ['https://plus.unsplash.com/premium_photo-1671100502325-8870ff9ba5c9?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8Y2ljbGlzdGF8ZW58MHx8MHx8fDA%3D'],
+              'Running': ['https://images.unsplash.com/photo-1552674605-db6ffd4facb5?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8cnVufGVufDB8fDB8fHww']
+            };
+
+            const imageUrls = Object.values(fondosPorDeporte).flat();
+            const carouselContainer = document.querySelector('.hero-background-carousel');
+            let currentIndex = 0;
+
+            if (carouselContainer && imageUrls.length > 0) {
+                // Precarga las imágenes para que la transición sea fluida
+                imageUrls.forEach(url => { new Image().src = url; });
+
+                // Crea los elementos de imagen en el DOM
+                imageUrls.forEach((url, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'bg-image';
+                    div.style.backgroundImage = `url('${url}')`;
+                    if (index === 0) div.classList.add('active');
+                    carouselContainer.appendChild(div);
+                });
+
+                const imageElements = carouselContainer.querySelectorAll('.bg-image');
+
+                // Inicia el intervalo para cambiar de imagen
+                setInterval(() => {
+                    imageElements[currentIndex].classList.remove('active');
+                    currentIndex = (currentIndex + 1) % imageElements.length;
+                    imageElements[currentIndex].classList.add('active');
+                }, 4000); // Cambia la imagen cada 4 segundos
+            }
+        });
+    </script>
+
+</body>
+</html>
